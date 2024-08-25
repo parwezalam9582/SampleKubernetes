@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: flask-app-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app: flask-app
+    app: your-app-label
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
-      nodePort: 30007 # Choose a port in the range 30000-32767
+      port: 80       # External port exposed by the LoadBalancer
+      targetPort: 5000 # Internal port of your container
