@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: cold9667/flask-2sum-app:latest
+        image: cold9667/2sum-app:latest
         ports:
         - containerPort: 8080
