@@ -5,7 +5,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: your-app-label
+    app: flask-app
   ports:
     - protocol: TCP
       port: 80       # External port exposed by the LoadBalancer
