@@ -9,4 +9,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80       # External port exposed by the LoadBalancer
-      targetPort: 5000 # Internal port of your container
+      targetPort: 8080 # Internal port of your container
