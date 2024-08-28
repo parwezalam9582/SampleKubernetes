@@ -50,6 +50,13 @@ jobs:
           gcloud auth list
           gcloud config list
 
+      - name: Debug gcloud authentication
+        run: |
+          gcloud auth list
+          gcloud config list
+          gcloud info
+            
+
       - name: Configure kubectl
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
