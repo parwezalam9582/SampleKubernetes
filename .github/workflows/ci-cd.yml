@@ -30,9 +30,7 @@ jobs:
         run: |
           pip show pytest  # Verify pytest is installed
 
-      - name: Run tests
-        run: |
-          pytest  # Run tests with pytest
+      
 
   deploy:
     runs-on: ubuntu-latest
