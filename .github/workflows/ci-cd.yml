@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to the main branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger workflow on pull request to the main branch
+      - main
 
 jobs:
   build:
@@ -14,41 +14,41 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Checkout the repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'  # Specify Python version
+          python-version: '3.x'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt  # Install dependencies
+          pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          pytest  # Run tests with pytest
+          pytest
 
       - name: Install Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose  # Install Docker Compose
+          sudo apt-get install -y docker-compose
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and Push Docker Image
         run: |
-          docker-compose build  # Build Docker images using docker-compose
-          docker-compose push   # Push Docker images to the registry
+          docker-compose build
+          docker-compose push
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build  # Run deploy job after build job completes successfully
-    if: github.ref == 'refs/heads/main'  # Only deploy if on the main branch
+    needs: build
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -57,8 +57,8 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}  # Use the GCP project ID from GitHub Secrets
-          credentials: ${{ secrets.GCP_SA_KEY }}     # Use the GCP service account key from GitHub Secrets
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          credentials: ${{ secrets.GCP_SA_KEY }}
 
       - name: Authenticate with GCP
         run: |
@@ -68,13 +68,11 @@ jobs:
       - name: Configure kubectl
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud container clusters get-credentials firstexample --region asia-south1  # Replace with your cluster details
+          gcloud container clusters get-credentials firstexample --region asia-south1
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f deployment.yaml  # Apply Kubernetes deployment
-          kubectl apply -f service.yaml     # Apply Kubernetes service
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
 
       - name: Notify Deployment Success
-        run: |
-          echo "Deployment successful!"
