@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on push to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger workflow on pull request to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Checkout the repository
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Specify Python version
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # Install dependencies
+
+      - name: Run tests
+        run: |
+          pytest  # Run tests with pytest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Run deploy job after build job completes successfully
+    if: github.ref == 'refs/heads/main'  # Only deploy if on the main branch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}  # Use the GCP project ID from GitHub Secrets
+          credentials: ${{ secrets.GCP_SA_KEY }}     # Use the GCP service account key from GitHub Secrets
+
+      - name: Configure kubectl
+        run: |
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud container clusters get-credentials firstexample --region asia-south1  # Replace with your cluster details
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f deployment.yaml  # Apply Kubernetes deployment
+          kubectl apply -f service.yaml     # Apply Kubernetes service
+
+      - name: Notify Deployment Success
+        run: |
+          echo "Deployment successful!"
