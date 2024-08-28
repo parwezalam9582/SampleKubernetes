@@ -26,14 +26,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: List files
-        run: |
-          ls -R  # List all files to verify test files are present
-
-      - name: Verify pytest installation
-        run: |
-          pip show pytest
-
       - name: Run tests
         run: |
           pytest
