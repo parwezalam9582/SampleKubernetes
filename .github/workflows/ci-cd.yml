@@ -62,4 +62,4 @@ jobs:
 
       - name: Notify Deployment Success
         run: |
-          echo "Deployment successful!"
+          echo "Deployment successfull!"
