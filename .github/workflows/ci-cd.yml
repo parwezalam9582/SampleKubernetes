@@ -49,11 +49,13 @@ jobs:
         run: |
           gcloud auth list
           gcloud config list
+          gcloud auth login
+          gcloud config set account ACCOUNT
 
       - name: Configure kubectl
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud container clusters get-credentials firstexample --region asia-south1 --project groovy-design-433613-b1
+          gcloud container clusters get-credentials firstexample --region asia-south1 
 
       - name: Deploy to Kubernetes
         run: |
