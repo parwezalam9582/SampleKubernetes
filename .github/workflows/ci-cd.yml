@@ -51,10 +51,25 @@ jobs:
           gcloud config list
           gcloud info
 
+      - name: List Active Accounts
+        run: |
+          gcloud auth list
+
+      - name: Verify gcloud Configuration
+        run: |
+          gcloud config list
+
+      - name: Update gcloud SDK
+        run: |
+          gcloud components update
+
       - name: Configure kubectl
         run: |
+          set -x  # Enable debugging
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud container clusters get-credentials firstexample --region asia-south1 --project ${{ secrets.GCP_PROJECT_ID }}
+          kubectl cluster-info
+          kubectl get nodes
 
       - name: Deploy to Kubernetes
         run: |
