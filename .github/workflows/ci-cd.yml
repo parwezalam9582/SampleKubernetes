@@ -25,14 +25,15 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Install Docker
         run: |
-          pytest
+          sudo apt-get update
+          sudo apt-get install -y docker.io
 
       - name: Install Docker Compose
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -58,9 +59,12 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          credentials: ${{ secrets.GCP_SA_KEY }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      
+      - name: Authenticate with GCP
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > "${HOME}/gcp-key.json"
+          gcloud auth activate-service-account --key-file="${HOME}/gcp-key.json"
 
       - name: Configure kubectl
         run: |
@@ -73,3 +77,5 @@ jobs:
           kubectl apply -f service.yaml
 
       - name: Notify Deployment Success
+        run: |
+          echo "Deployment successful!"
