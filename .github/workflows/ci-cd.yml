@@ -50,7 +50,7 @@ jobs:
           gcloud auth list
           gcloud config list
           gcloud auth login
-          gcloud config set account ACCOUNT
+          gcloud config set account parwezalam9582@gmail.com
 
       - name: Configure kubectl
         run: |
